@@ -4,7 +4,7 @@ const AUTH_URL = `https://accounts.spotify.com/authorize
 ?client_id=${clientId}
 &response_type=code
 &redirect_uri=${encodeURIComponent(REDIRECT_URI)}
-&scope=user-read-private user-read-email`;
+&scope=user-read-private user-read-email user-top-read`;
 
 export default function HomePage() {
   return (
