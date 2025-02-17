@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AfterLogin() {
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
+  const location = useLocation(); // Per accedere alla query string
+  const navigate = useNavigate(); // Per fare il redirect, se necessario
 
   useEffect(() => {
-    const accessToken =
-      "BQAE-vdlCqBv4XDqZYrfuewW3EDP7mE-QOD-AlZn0txitj9zPwPsGth56dIKcuX7_acPPlYFF0qDQMTRPiOMJR2CesEJVfmGTxYH0sIVPitp7WCxfXZV8M54BGdN5QVWSq8ONX_ZEHAX6ewqUT-d5rCTq8yIr7czWEwrfSxpb5Pc3G706SDEjDM8pqAKbS8eRnxfUVzxFzFxgCNnQk16Q1CeSEcaBH8-M91bpMxhJ6ItYcXjyTtyFg"; // Sostituisci con l'access token dell'utente, che probabilmente otterrai dopo la callback
+    // Recupera l'access token dalla query string
+    const params = new URLSearchParams(location.search);
+    const accessToken = params.get("access_token");
 
+    if (!accessToken) {
+      setError("No access token found");
+      return;
+    }
+
+    // Salva l'access token nel localStorage
+    localStorage.setItem("access_token", accessToken);
+
+    // Ora puoi fare la richiesta per recuperare i dettagli dell'utente
     fetch(`http://localhost:3000/user-info?access_token=${accessToken}`)
       .then((response) => response.json())
       .then((data) => {
@@ -16,7 +29,7 @@ function AfterLogin() {
       .catch((error) => {
         setError("Failed to fetch user info");
       });
-  }, []);
+  }, [location]);
 
   if (error) {
     return <div>{error}</div>;
@@ -31,7 +44,6 @@ function AfterLogin() {
       <h1>Welcome, {userInfo.display_name}</h1>
       <p>Email: {userInfo.email}</p>
       <p>Country: {userInfo.country}</p>
-      {/* Aggiungi altre informazioni se necessario */}
     </div>
   );
 }
